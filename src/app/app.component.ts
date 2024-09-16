@@ -1,56 +1,53 @@
-import { Component } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
 import { Todo } from './types/todo';
+import { TodosService } from './services/todos.service';
 
-const todos = [
-  { id: 1, title: 'HTML + CSS', completed: true },
-  { id: 2, title: 'JS', completed: false },
-  { id: 3, title: 'React', completed: false },
-  { id: 4, title: 'Vue', completed: false },
-];
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
-export class AppComponent {
-  todos = todos;
+export class AppComponent implements OnInit {
+  _todos: Todo[] = [];
+  activeTodos: Todo[] = [];
+
+  get todos() {
+    return this._todos;
+  }
+  set todos(todos: Todo[]) {
+    if (this._todos === todos) {
+      return;
+    }
+
+    this._todos = todos;
+    this.activeTodos = todos.filter(({ completed }) => !completed);
+  }
+
+  constructor(private todosSevice: TodosService) {}
+
+  ngOnInit(): void {
+    this.todosSevice.todos$.subscribe((todos) => (this.todos = todos));
+  }
 
   trackById(i: number, todo: Todo) {
     return todo.id;
   }
 
   addTodo(title: string) {
-    const newTodo: Todo = {
-      id: Date.now(),
-      title,
-      completed: false,
-    };
-
-    this.todos = [...this.todos, newTodo];
+    this.todosSevice.createTodo(title).subscribe();
   }
 
-  renameTodo(todoId: number, title: string) {
-    this.todos = this.todos.map((todo) => {
-      if (todoId === todo.id) {
-        return { ...todo, title };
-      }
-
-      return todo;
-    });
+  renameTodo(todo: Todo, title: string) {
+    this.todosSevice.updateTodo({ ...todo, title }).subscribe();
   }
 
-  completeTodo(todoId: number) {
-    this.todos = this.todos.map((todo) => {
-      if (todoId === todo.id) {
-        return { ...todo, completed: !todo.completed };
-      }
-
-      return todo;
-    });
+  toggleTodo(todo: Todo) {
+    this.todosSevice
+      .updateTodo({ ...todo, completed: !todo.completed })
+      .subscribe();
   }
 
   deleteTodo(todoId: number) {
-    this.todos = this.todos.filter((todo) => todoId !== todo.id);
+    this.todosSevice.deleteTodo(todoId).subscribe();
   }
 }

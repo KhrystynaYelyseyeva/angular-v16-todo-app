@@ -16,15 +16,15 @@
       <app-todo
         *ngFor="let todo of todos; let i = index; trackBy: trackById"
         [todo]="todo"
-        (rename)="renameTodo(todo.id, $event)"
-        (toggle)="completeTodo(todo.id)"
+        (rename)="renameTodo(todo, $event)"
+        (toggle)="toggleTodo(todo)"
         (delete)="deleteTodo(todo.id)"
       ></app-todo>
     </section>
 
     <footer class="todoapp__footer" data-cy="Footer">
       <span class="todo-count" data-cy="TodosCounter">
-        {{ (todos | filterActive).length }} items left
+        {{ activeTodos.length }} items left
       </span>
 
       <nav class="filter" data-cy="Filter">
