@@ -1,0 +1,46 @@
+.message {
+  border-radius: 5px;
+  margin-bottom: 20px;
+  font-family: 'Arial', sans-serif;
+  position: relative;
+
+  &.is-danger {
+    background-color: #f14668;
+    color: white;
+
+    .message-header {
+      background-color: #ff3860;
+      padding: 10px;
+      border-top-left-radius: 5px;
+      border-top-right-radius: 5px;
+
+      p {
+        margin: 0;
+        font-weight: bold;
+      }
+
+      .delete {
+        background: none;
+        border: none;
+        font-size: 1.2rem;
+        color: white;
+        cursor: pointer;
+
+        &:hover {
+          color: #ffdddd;
+        }
+      }
+    }
+
+    .message-body {
+      padding: 15px;
+      background-color: #fddde4;
+      border-bottom-left-radius: 5px;
+      border-bottom-right-radius: 5px;
+    }
+  }
+
+  &--hidden {
+    display: none;
+  }
+}

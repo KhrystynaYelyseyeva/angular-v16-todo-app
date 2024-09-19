@@ -1,57 +1,7 @@
-<div class="todoapp">
-  <h1 class="todoapp__title">todos</h1>
+<nav>
+  <a routerLink="/todos">Todos</a>
+  <br />
+  <a routerLink="/about">About</a>
+</nav>
 
-  <div class="todoapp__content">
-    <header class="todoapp__header">
-      <button
-        type="button"
-        class="todoapp__toggle-all active"
-        data-cy="ToggleAllButton"
-      ></button>
-
-      <app-todo-form (save)="addTodo($event)"></app-todo-form>
-    </header>
-
-    <section class="todoapp__main" data-cy="TodoList">
-      <app-todo
-        *ngFor="let todo of todos; let i = index; trackBy: trackById"
-        [todo]="todo"
-        (rename)="renameTodo(todo, $event)"
-        (toggle)="toggleTodo(todo)"
-        (delete)="deleteTodo(todo.id)"
-      ></app-todo>
-    </section>
-
-    <footer class="todoapp__footer" data-cy="Footer">
-      <span class="todo-count" data-cy="TodosCounter">
-        {{ activeTodos.length }} items left
-      </span>
-
-      <nav class="filter" data-cy="Filter">
-        <a href="#/" class="filter__link selected" data-cy="FilterLinkAll">
-          All
-        </a>
-
-        <a href="#/active" class="filter__link" data-cy="FilterLinkActive">
-          Active
-        </a>
-
-        <a
-          href="#/completed"
-          class="filter__link"
-          data-cy="FilterLinkCompleted"
-        >
-          Completed
-        </a>
-      </nav>
-
-      <button
-        type="button"
-        class="todoapp__clear-completed"
-        data-cy="ClearCompletedButton"
-      >
-        Clear completed
-      </button>
-    </footer>
-  </div>
-</div>
+<router-outlet></router-outlet>

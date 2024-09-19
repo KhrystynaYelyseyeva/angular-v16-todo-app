@@ -1,7 +1,14 @@
 import { Todo } from './../types/todo';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, Subject, switchMap, tap } from 'rxjs';
+import {
+  BehaviorSubject,
+  Observable,
+  Subject,
+  switchMap,
+  tap,
+  withLatestFrom,
+} from 'rxjs';
 
 // const todos: Todo[] = [
 //   { "id": 1, "title": "HTML + CSS", "completed": true },
@@ -15,15 +22,18 @@ const API = 'https://angular-todo-app.free.beeceptor.com';
   providedIn: 'root',
 })
 export class TodosService {
-  refetch$$ = new BehaviorSubject(null);
-  todos$: Observable<Todo[]>;
+  private todos$$ = new BehaviorSubject<Todo[]>([]);
 
-  constructor(private http: HttpClient) {
-    this.todos$ = this.refetch$$.pipe(switchMap(() => this.getTodos()));
-  }
+  todos$ = this.todos$$.asObservable();
+
+  constructor(private http: HttpClient) {}
 
   getTodos() {
-    return this.http.get<Todo[]>(`${API}/todos`);
+    return this.http.get<Todo[]>(`${API}/todos`).pipe(
+      tap((todos) => {
+        this.todos$$.next(todos);
+      })
+    );
   }
 
   createTodo(title: string) {
@@ -33,18 +43,31 @@ export class TodosService {
         title,
         completed: false,
       })
-      .pipe(tap(() => this.refetch$$.next(null)));
+      .pipe(
+        withLatestFrom(this.todos$$),
+        tap(([createdTodo, todos]) => {
+          this.todos$$.next([...todos, createdTodo]);
+        })
+      );
   }
 
   updateTodo(todo: Todo) {
-    return this.http
-      .patch<Todo>(`${API}/todo/${todo}`, todo)
-      .pipe(tap(() => this.refetch$$.next(null)));
+    return this.http.patch<Todo>(`${API}/todo/${todo}`, todo).pipe(
+      withLatestFrom(this.todos$$),
+      tap(([updatedTodo, todos]) => {
+        this.todos$$.next(
+          todos.map((todo) => (todo.id === updatedTodo.id ? updatedTodo : todo))
+        );
+      })
+    );
   }
 
   deleteTodo(id: number) {
-    return this.http
-      .delete<number>(`${API}/todo/${id}`)
-      .pipe(tap(() => this.refetch$$.next(null)));
+    return this.http.delete<number>(`${API}/todo/${id}`).pipe(
+      withLatestFrom(this.todos$$),
+      tap(([_, todos]) => {
+        this.todos$$.next(todos.filter((todo) => todo.id !== id));
+      })
+    );
   }
 }
