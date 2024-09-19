@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { map } from 'rxjs';
 import { MessageService } from 'src/app/services/message.service';
 import { TodosService } from 'src/app/services/todos.service';
 import { Todo } from 'src/app/types/todo';
@@ -9,21 +10,11 @@ import { Todo } from 'src/app/types/todo';
   styleUrls: ['./todos-page.component.scss'],
 })
 export class TodosPageComponent implements OnInit {
-  _todos: Todo[] = [];
-  activeTodos: Todo[] = [];
-  errorMessage = '';
-
-  get todos() {
-    return this._todos;
-  }
-  set todos(todos: Todo[]) {
-    if (this._todos === todos) {
-      return;
-    }
-
-    this._todos = todos;
-    this.activeTodos = todos.filter(({ completed }) => !completed);
-  }
+  todos$ = this.todosSevice.todos$;
+  activeTodos$ = this.todos$.pipe(
+    map((todos) => todos.filter((todo) => !todo.completed))
+  );
+  activeCount$ = this.activeTodos$.pipe(map((todos) => todos.length));
 
   constructor(
     private todosSevice: TodosService,
@@ -31,7 +22,6 @@ export class TodosPageComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.todosSevice.todos$.subscribe((todos) => (this.todos = todos));
     this.todosSevice.getTodos().subscribe({
       error: () => this.messageService.showMessage('Unable to load todos'),
     });

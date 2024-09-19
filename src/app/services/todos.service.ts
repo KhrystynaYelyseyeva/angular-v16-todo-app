@@ -52,7 +52,7 @@ export class TodosService {
   }
 
   updateTodo(todo: Todo) {
-    return this.http.patch<Todo>(`${API}/todo/${todo}`, todo).pipe(
+    return this.http.patch<Todo>(`${API}/todo/${todo.id}`, todo).pipe(
       withLatestFrom(this.todos$$),
       tap(([updatedTodo, todos]) => {
         this.todos$$.next(

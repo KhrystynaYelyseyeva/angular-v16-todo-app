@@ -6,7 +6,6 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { AppComponent } from './app.component';
 import { FilterActivePipe } from './pipes/filter-active.pipe';
-import { AboutPageComponent } from './about/about-page/about-page.component';
 import { TodoComponent } from './components/todo/todo.component';
 import { TodoFormComponent } from './components/todo-form/todo-form.component';
 import { MessageComponent } from './components/message/message.component';
