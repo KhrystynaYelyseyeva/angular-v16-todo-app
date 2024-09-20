@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { map } from 'rxjs';
+import { ActivatedRoute } from '@angular/router';
+import { map, switchMap } from 'rxjs';
 import { MessageService } from 'src/app/services/message.service';
 import { TodosService } from 'src/app/services/todos.service';
+import { Status } from 'src/app/types/status';
 import { Todo } from 'src/app/types/todo';
 
 @Component({
@@ -11,14 +13,30 @@ import { Todo } from 'src/app/types/todo';
 })
 export class TodosPageComponent implements OnInit {
   todos$ = this.todosSevice.todos$;
+  completedTodos$ = this.todos$.pipe(
+    map((todos) => todos.filter((todo) => todo.completed))
+  );
   activeTodos$ = this.todos$.pipe(
     map((todos) => todos.filter((todo) => !todo.completed))
   );
   activeCount$ = this.activeTodos$.pipe(map((todos) => todos.length));
+  visibleTodos$ = this.route.params.pipe(
+    switchMap((params) => {
+      switch (params['status'] as Status) {
+        case 'active':
+          return this.activeTodos$;
+        case 'completed':
+          return this.completedTodos$;
+        default:
+          return this.todos$;
+      }
+    })
+  );
 
   constructor(
     private todosSevice: TodosService,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {

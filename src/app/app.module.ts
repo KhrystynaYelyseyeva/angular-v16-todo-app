@@ -10,15 +10,16 @@ import { TodoComponent } from './components/todo/todo.component';
 import { TodoFormComponent } from './components/todo-form/todo-form.component';
 import { MessageComponent } from './components/message/message.component';
 import { TodosPageComponent } from './components/todos-page/todos-page.component';
+import { FilterComponentComponent } from './components/filter-component/filter-component.component';
 
 const routes: Routes = [
-  { path: 'todos', component: TodosPageComponent },
+  { path: 'todos/:status', component: TodosPageComponent },
   {
     path: 'about',
     loadChildren: () =>
       import('./about/about.module').then((m) => m.AboutModule),
   },
-  { path: '**', redirectTo: '/todos', pathMatch: 'full' },
+  { path: '**', redirectTo: '/todos/all', pathMatch: 'full' },
 ];
 
 @NgModule({
@@ -29,6 +30,7 @@ const routes: Routes = [
     FilterActivePipe,
     MessageComponent,
     TodosPageComponent,
+    FilterComponentComponent,
   ],
   imports: [
     BrowserModule,
